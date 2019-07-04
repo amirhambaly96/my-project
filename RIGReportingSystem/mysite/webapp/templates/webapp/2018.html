@@ -1,0 +1,77 @@
+{% extends "webapp/header.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<style>
+table {
+    text-align: center;
+    border-collapse: collapse;
+    border: 1px solid #d4d4d4;
+    font-size: 12px;
+    background: #fff;
+  }
+   
+  table th, 
+  table tr:nth-child(2n+2) {
+    background: #e7e7e7;
+  }
+    
+  table th, 
+  table td {
+    padding: 10px 30px;
+  }
+    
+  table th {
+    border-bottom: 1px solid #d4d4d4;
+}
+
+}
+</style>
+<head>
+    <meta charset='utf-8' />
+    <title>Simple Bar chart</title>
+    {% load static %}
+    <script src="{% static 'webapp/js/jquery1.js' %}" charset="utf-8"></script>
+    <script src="{% static 'webapp/js/d2.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'webapp/css/boot3.css'%}"">
+    <link rel="stylesheet" href="{% static 'webapp/css/mouse.css'%}"">
+    </head>
+<body>
+    <table>
+        <tr><td>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Publication
+          <span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><a href="/indexedjournal">Indexed Journal</a></li>
+            <li><a href="/nonindexedjournal">Non Indexed Journal</a></li>
+            <li><a href="/otherpublication">Other Publications</a></li>
+          </ul>
+          </div>
+      </td>
+      <td>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Research Grant
+          <span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><a href="/nationalgrant">National Grant</a></li>
+            <li><a href="/nationalgrantRM">National Grant(in Ringgit)</a></li>
+          </ul>
+        </div>
+    </td>
+    <td></td><td><button type="button" onclick= "window.location.href='/indexedjournal'" class="btn btn-default">Go Back</button></td>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td></td>   
+        <td>
+            <button id="sortAscending" class="btn btn-default">Sort Ascending</button>
+            <button id="sortDescending" class="btn btn-default">Sort Descending</button>
+            <button type="button" onclick= "window.location.href='/performance1'" class="btn btn-warning">Total Performance</button>
+        </td>
+    </tr>
+</table>
+    
+</body>  
+{% endblock %}

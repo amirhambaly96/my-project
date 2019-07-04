@@ -1,0 +1,412 @@
+{% extends "webapp/header.html" %}
+
+{% block content %}
+<html>
+{% load static %}
+    <script src="{% static 'webapp/js/jquery1.js' %}" charset="utf-8"></script>
+    <script src="{% static 'webapp/js/d2.min.js' %}"></script>
+   
+    <link rel="stylesheet" href="{% static 'webapp/css/boot3.css'%}"">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+.toolTip {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        position: absolute;
+        display: none;
+        width: auto;
+        height: auto;
+        background: none repeat scroll 0 0 white;
+        border: 0 none;
+        border-radius: 8px 8px 8px 8px;
+        box-shadow: -3px 3px 15px #888888;
+        color: black;
+        font: 12px sans-serif;
+        padding: 5px;
+        text-align: center;
+    }
+    table {
+    text-align: center;
+    border-collapse: collapse;
+    border: 1px solid #d4d4d4;
+    font-size: 12px;
+    background: #fff;
+  }
+   
+  table th, 
+  table tr:nth-child(2n+2) {
+    background: #e7e7e7;
+  }
+    
+  table th, 
+  table td {
+    padding: 10px 30px;
+  }
+    
+  table th {
+    border-bottom: 1px solid #d4d4d4;
+</style>
+    <body>
+    <table>
+        <tr><td>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Publication
+          <span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><a href="/indexedjournal">Indexed Journal</a></li>
+            <li><a href="/nonindexedjournal">Non Indexed Journal</a></li>
+            <li><a href="/otherpublication">Other Publications</a></li>
+          </ul>
+          </div>
+      </td>
+      <td>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Research Grant
+          <span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><a href="/nationalgrant">National Grant</a></li>
+            <li><a href="/nationalgrantRM">National Grant(in Ringgit)</a></li>
+          </ul>
+        </div>
+    </td>
+    <td></td><td><button type="button" onclick= "window.location.href='/otherpublication'" class="btn btn-default">Go Back</button></td>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td></td>   
+        <td>
+            <button id="sortAscending" class="btn btn-default">Sort Ascending</button>
+            <button id="sortDescending" class="btn btn-default">Sort Descending</button>
+            <button type="button" onclick= "window.location.href='/performance1'" class="btn btn-warning">Total Performance</button>
+        </td>
+    </tr>
+</table>
+    <div id="chart" style="height:600px;width:600px">
+        <div class="innerCont" style="overflow: auto; top:100px; left: 0px; height:100% ; Width:250% ;position: relative;overflow: hidden;"></div>
+    </div>
+    <br><br><br><br><br>
+    <center><table id="demo"></table></center>
+    
+</body>	
+        <script>
+        	var table = d3.select("body").append("table").attr("class", "table");
+        	var div = d3.select("body").append("div").attr("class", "toolTip");
+	            var chartData = [{% for Publication in pub %}
+                {"RIG" :"{{Publication.rig.rig_sname}}",
+                "fName" :"{{Publication.rig.rig_name}}",             
+                "Lecturer" :"{{Publication.lecturer}}",
+                "value" :{{Publication.tot_oth_pub}},
+                "OtherPublication" :"{{Publication.oth_pub|linebreaks}}"},
+                {% endfor %}
+
+            ];
+            chartOptions = [{
+                "captions": [{ "AAEC": "AAEC", "LMRG": "LMRG", "CNBL": "CNBL", "ARSG": "ARSG", "DIAST": "DIAST", "WHSN": "WHSN", "AERG": "AERG", "WICOT": "WICOT", "SVAG": "SVAG", "PoSPO": "PoSPO", "CERG": "CERG", "KASERG": "KASERG", "POSC": "POSC", "INSTIL": "INSTIL", "SASM": "SASM", "MaIS": "MaIS", "ICC": "ICC", "ISRG": "ISRG", "AUROB": "AUROB", "WSNC": "WSNC", "IIRG": "IIRG", "MLAT": "MLAT", "WSNC": "WSNC", "DFRG": "DFRG", "EArA": "EArA", "ELIoTT": "ELIoTT", "IMSaA": "IMSaA", "ARC": "ARC", "IISD": "IISD", "MuDIR": "MuDIR" }],
+                "color": [{ "AAEC": "#8B008B", "LMRG": "#8B008B", "CNBL": "#8B008B", "ARSG": "#8B008B", "DIAST": "#8B008B", "WHSN": "#8B008B", "AERG": "#8B008B", "WICOT": "#8B008B", "SVAG": "#8B008B", "PoSPO": "#8B008B", "CERG": "#8B008B", "KASERG": "#8B008B", "POSC": "#8B008B", "INSTIL": "#8B008B", "SASM": "#8B008B", "MaIS": "#8B008B", "ICC": "#8B008B", "ISRG": "#8B008B", "AUROB": "#8B008B", "WSNC": "#8B008B", "IIRG": "#8B008B", "MLAT": "#8B008B", "WSNC": "#8B008B", "DFRG": "#8B008B", "EArA": "#8B008B", "ELIoTT": "#8B008B", "IMSaA": "#8B008B", "ARC": "#8B008B", "IISD": "#8B008B", "MuDIR": "#8B008B" }],
+                "xaxis": "RIG",
+                "xaxisl1": "Lecturer",
+                "yaxis": "value",
+                "noaxis":"fName",
+                "table1":"OtherPublication"
+            }]
+        var salesData;
+        var truncLengh = 30;
+        $(document).ready(function () {
+            Plot();
+        });
+        function Plot() {
+            TransformChartData(chartData, chartOptions);
+            BuildBar("chart", chartData, chartOptions);
+        }
+        function BuildBar(id, chartData, options, level) {
+            chart = d3.select("#" + id + " .innerCont");
+            var margin = { top: 50, right: 10, bottom: 30, left: 50 },
+            width = $(chart[0]).outerWidth() - margin.left - margin.right,
+            height = $(chart[0]).outerHeight() - margin.top - margin.bottom
+            var xVarName;
+            var yVarName = options[0].yaxis;
+            if (level == 1) {
+                xVarName = options[0].xaxisl1;
+            }
+            else {
+                xVarName = options[0].xaxis;
+            }
+            var xAry = runningData.map(function (el) {
+                return el[xVarName];
+            });
+            var yAry = runningData.map(function (el) {
+                return el[yVarName];
+            });
+            var capAry = runningData.map(function (el) { return el.caption; });
+            var x = d3.scale.ordinal().domain(xAry).rangeRoundBands([0, width], .5);
+            var y = d3.scale.linear().domain([0, d3.max(runningData, function (d) { return d[yVarName]; })]).range([height, 0]);
+            var rcolor = d3.scale.ordinal().range(runningColors);
+            chart = chart
+                        .append("svg")  //append svg element inside #chart
+                        .attr("width", width + margin.left + margin.right)    //set width
+                        .attr("height", height + margin.top + margin.bottom);  //set height
+            var bar = chart.selectAll("g")
+                            .data(runningData)
+                            .enter()
+                            .append("g")
+                            //.attr("filter", "url(#dropshadow)")
+                            .attr("transform", function (d) {
+                                return "translate(" + x(d[xVarName]) + ", 0)";
+                            });
+            var ctrtxt = 0;
+            var xAxis = d3.svg.axis()
+                        .scale(x)
+                        //.orient("bottom").ticks(xAry.length).tickValues(capAry);  //orient bottom because x-axis tick labels will appear on the
+                        .orient("bottom").ticks(xAry.length)
+                        .tickFormat(function (d) {
+                            if (level == 0) {
+                                var mapper = options[0].captions[0]
+                                return mapper[d]
+                            }
+                            else {
+                                var r = runningData[ctrtxt].caption;
+                                ctrtxt += 1;
+                                return r;
+                            }
+                        });
+            var yAxis = d3.svg.axis()
+                            .scale(y)
+                            .orient("left").ticks(5); //orient left because y-axis tick labels will appear on the left side of the axis.
+            bar.append("rect")
+                .attr("y", function (d) {
+                    return y(d.value) + margin.top - 15;
+                })
+                .attr("x", function (d) {
+                    return (margin.left-13);
+                })
+                .on("mouseenter", function (d) {
+                    d3.select(this)
+                        .attr("stroke", "white")
+                        .attr("stroke-width", 1)
+                        .attr("height", function (d) {
+                            return height - y(d[yVarName]) + 5;
+                        })
+                        .attr("y", function (d) {
+                            return y(d.value) + margin.top - 20;
+                        })
+                        .attr("width", x.rangeBand() + 10)
+                        .attr("x", function (d) {
+                            return (margin.left - 20);
+                        })
+                        .transition()
+                        .duration(200);
+                })
+                .on("mouseleave", function (d) {
+                    d3.select(this)
+                        .attr("stroke", "none")
+                        .attr("height", function (d) {
+                            return height - y(d[yVarName]);;
+                        })
+                        .attr("y", function (d) {
+                            return y(d[yVarName]) + margin.top - 15;
+                        })
+                        .attr("width", x.rangeBand())
+                        .attr("x", function (d) {
+                            return (margin.left-13);
+                        })
+                        .transition()
+                        .duration(200);
+                })
+                .on("mousemove", function(d){
+                        div.style("left", d3.event.pageX+10+"px");
+                        div.style("top", d3.event.pageY-25+"px");
+                        div.style("display", "inline-block");
+                        div.html((d["title"])+"<br>"+(d[yVarName]));
+                    })
+                    .on("mouseout", function(d){
+                        div.style("display", "none");
+                    })
+                .on("click", function (d) {
+                    if (this._listenToEvents) {
+                        // Reset inmediatelly
+                        d3.select(this).attr("transform", "translate(0,0)")
+                        // Change level on click if no transition has started                
+                        path.each(function () {
+                            this._listenToEvents = false;
+                        });
+                    }
+                    d3.selectAll("#" + id + " svg").remove();
+                    if (level == 1) {
+                        TransformChartData(chartData, options, 0, d[xVarName]);
+                        BuildBar(id, chartData, options, 0);
+                    }
+                    else {
+                        var nonSortedChart = chartData.sort(function (a, b) {
+                            return parseFloat(b[options[0].yaxis]) - parseFloat(a[options[0].yaxis]);
+                        });
+                        TransformChartData(nonSortedChart, options, 1, d[xVarName]);
+                        BuildBar(id, nonSortedChart, options, 1);
+                    }
+                });
+            bar.selectAll("rect").attr("height", function (d) {
+                return height - y(d[yVarName]);
+            })
+                .transition().delay(function (d, i) { return i * 300; })
+                .duration(1000)
+                .attr("width", x.rangeBand()) //set width base on range on ordinal data
+                .transition().delay(function (d, i) { return i * 300; })
+                .duration(1000);
+            bar.selectAll("rect").style("fill", function (d) {
+                return rcolor(d[xVarName]);
+            })
+            .style("opacity", function (d) {
+                return d["op"];
+            });
+            bar.append("text")
+                .attr("x", x.rangeBand() / 2 + margin.left - 10)
+                .attr("y", function (d) { return y(d[yVarName]) + margin.top - 25; })
+                .style("font-size", "14px")
+                .attr("dy", ".35em")
+                .text(function (d) {
+                    return d[yVarName];
+                });
+            chart.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(" + margin.left + "," + (height + margin.top - 15) + ")")
+                .call(xAxis)
+            .append("text")
+                .attr("x", width)
+                .attr("y", -6)
+            .style("text-anchor", "end")
+            chart.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + margin.left + "," + (margin.top - 15) + ")")
+                .call(yAxis)
+                .append("text")
+                .style("font-size", "12px")
+                    .attr("transform", "rotate(0)")
+                    .attr("y", -20)
+                    .attr("dy", ".15em")
+                    .style("text-anchor", "start")
+                .text("Other Publication");
+            if (level == 1) {
+                chart.select(".x.axis")
+                .selectAll("text")
+                .attr("transform", " translate(20,10) rotate(0)");
+                chart.selectAll("rect").on("click", displayInfo);
+                    function displayInfo(d) {
+                        var txt,txt1,txt2;
+                        txt = d["othPub"];
+                        txt1 = d["Lecturer"];
+                        txt2 = d["name"];
+                        document.getElementById("demo").innerHTML = txt1+"<br>"+ txt2 +"<tr><td><b>Other Publication</b></td></tr>"  + "<tr><td>"+txt+"</td></tr>";
+                    }
+            }
+            d3.select("#sortAscending")
+                    .on("click", function() {
+
+                        bar.sort(function(a, b) {
+                                return d3.ascending(a.value, b.value);
+                            })
+                            
+                            .transition()
+                            .delay(function(d, i) {
+                                return i * 50;  // gives it a smoother effect
+                            })
+                            .duration(1000)
+                            .attr("transform", function(d,i) {
+                                return "translate(" + x(i) + ",0)";
+                            });
+         
+                    });
+
+                //This is EXACTLY the same as above, except for:
+                d3.select("#sortDescending")  //DEscending
+                    .on("click", function() {
+
+                        bar.sort(function(a, b) {
+                                return d3.descending(a.value, b.value);  //DEscending
+                            })
+                            .transition()
+                            .delay(function(d, i) {
+                                return i * 50;
+                            })
+                            .duration(1000)
+                            .attr("transform", function(d,i) {
+                                return "translate(" + x(i) + ",0)";
+                            });
+
+                    });
+        }
+        function TransformChartData(chartData, opts, level, filter) {
+                var result = [];
+                var resultColors = [];
+                var counter = 0;
+                var hasMatch;
+                var w;
+                var x;
+                var y = opts[0].yaxis;
+                var z;
+                if (level == 1) {
+                    x = opts[0].xaxisl1;
+                    w = opts[0].table1;
+                    z = opts[0].noaxis;
+                    for (var i in chartData) {
+                        hasMatch = false;
+                        for (var j = 0; j < result.length; ++j) {
+                            var data = result[j];
+                            if ((data[x] == chartData[i][x]) && (chartData[i][opts[0].xaxis]) == filter) {
+                                result[j][y] = result[j][y] + chartData[i][y];
+                                hasMatch = true;
+                                break;
+                            }
+                        }
+                        if ((hasMatch == false) && ((chartData[i][opts[0].xaxis]) == filter)) {
+                            if (result.length < 9) {
+                                newChart = {}
+                                newChart[x] = chartData[i][x];
+                                newChart[y] = chartData[i][y];
+                                newChart["othPub"] = chartData[i][w];
+                                newChart["name"] = chartData[i][z];
+                                newChart["caption"] = chartData[i][x].substring(0, 10) + '...';
+                                newChart["title"] = chartData[i][x];
+                                newChart["op"] = 1.0 - parseFloat("0." + (result.length));
+                                result.push(newChart);
+                                resultColors[counter] = opts[0].color[0][chartData[i][opts[0].xaxis]];
+                                counter += 1;
+                            }
+                        }
+                    }
+                }
+                else {
+                    x = opts[0].xaxis;
+                    z = opts[0].noaxis;
+                    for (var i in chartData) {
+                        hasMatch = false;
+                        for (var j = 0; j < result.length; ++j) {
+                            var data = result[j];
+                            if (data[x] == chartData[i][x]) {
+                                
+                                result[j][y] = result[j][y] + chartData[i][y];
+                                hasMatch = true;
+                                break;
+                            }
+                        }
+                        if (hasMatch == false) {
+                            newChart = {};
+                            newChart[x] = chartData[i][x];
+                            newChart[y] = chartData[i][y];
+                            newChart["othPub"] = opts[0].captions != undefined ? opts[0].captions[0][chartData[i][w]] : "";
+                            newChart["name"] = opts[0].captions != undefined ? opts[0].captions[0][chartData[i][z]] : "";
+                            newChart["caption"] = opts[0].captions != undefined ? opts[0].captions[0][chartData[i][x]] : "";
+                            newChart["title"] = opts[0].captions != undefined ? opts[0].captions[0][chartData[i][x]] : "";
+                            newChart["op"] = 1;
+                            result.push(newChart);
+                            resultColors[counter] = opts[0].color != undefined ? opts[0].color[0][chartData[i][x]] : "";
+                            counter += 1;
+                        }
+                    }
+                }
+                runningData = result;
+                runningColors = resultColors;
+                return;
+            }
+        </script>
+</html>
+
+
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends "webapp/header.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Simple Bar chart</title>
+    {% load static %}
+    <script src="{% static 'webapp/js/jquery1.js' %}" charset="utf-8"></script>
+    <script src="{% static 'webapp/js/d2.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'webapp/css/boot3.css'%}"">
+
+</head>
+<body>
+  <div class="btn-group" role="group" aria-label="...">
+    <button type="button" onclick="topThreeRIG()" class="btn btn-default">Top 3</button>
+    <button type="button" onclick="topThreeRIG()" class="btn btn-default">Bottom 3</button>
+  </div>
+      <center><h1>Research Grant</h1></center>
+    <div id="chart" style="height:500px;width:500px">
+        <div class="innerCont" style="overflow: auto; top:20px; left: 0px; height:100% ; Width:300% ;position: relative;overflow: hidden;"></div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    var chartData = [{% for dummyData in all_rigs %}
+                {"RIG" :"{{dummyData.rig_sname}}",
+                "Lecturer" :"{{dummyData.lect_name}}",
+                "value" :{{dummyData.pub}}},
+                {% endfor %}
+
+            ]; 
+            chartOptions = [{
+                "captions": [{ "AAEC": "AAEC", "LMRG": "LMRG", "CNBL": "CNBL", "ARSG": "ARSG", "DIAST": "DIAST", "WHSN": "WHSN", "AERG": "AERG", "WICOT": "WICOT", "SVAG": "SVAG", "PoSPO": "PoSPO", "CERG": "CERG", "KASERG": "KASERG", "POSC": "POSC", "INSTIL": "INSTIL", "SASM": "SASM", "MaIS": "MaIS", "IC&C": "IC&C", "ISRG": "ISRG", "AUROB": "AUROB", "WSNC": "WSNC", "IIRG": "IIRG", "MLAT": "MLAT", "WSNC": "WSNC", "DFRG": "DFRG", "EArA": "EArA", "ELIoTT": "ELIoTT", "IMSaA": "IMSaA", "ARC": "ARC", "IISD": "IISD", "MuDIR": "MuDIR" }],
+                "color": [{ "AAEC": "#8B008B", "LMRG": "#8B008B", "CNBL": "#8B008B", "ARSG": "#8B008B", "DIAST": "#8B008B", "WHSN": "#8B008B", "AERG": "#8B008B", "WICOT": "#8B008B", "SVAG": "#8B008B", "PoSPO": "#8B008B", "CERG": "#8B008B", "KASERG": "#8B008B", "POSC": "#8B008B", "INSTIL": "#8B008B", "SASM": "#8B008B", "MaIS": "#8B008B", "IC&C": "#8B008B", "ISRG": "#8B008B", "AUROB": "#8B008B", "WSNC": "#8B008B", "IIRG": "#8B008B", "MLAT": "#8B008B", "WSNC": "#8B008B", "DFRG": "#8B008B", "EArA": "#8B008B", "ELIoTT": "#8B008B", "IMSaA": "#8B008B", "ARC": "#8B008B", "IISD": "#8B008B", "MuDIR": "#8B008B" }],
+                "xaxis": "RIG",
+                "xaxisl1": "Lecturer",
+                "yaxis": "value",
+            }]
+    var salesData;
+    var runningData;
+    var runningColors;
+ 
+    $(document).ready(function () {
+        Plot();
+    });
+    function Plot() {
+        TransformChartData(chartData, chartOptions);
+        BuildBar("chart", chartData, chartOptions);
+    }
+    function BuildBar(id, chartData, options, level) {
+        chart = d3.select("#" + id + " .innerCont");
+        var margin = { top: 50, right: 10, bottom: 30, left: 50 },
+        width = $(chart[0]).outerWidth() - margin.left - margin.right,
+        height = $(chart[0]).outerHeight() - margin.top - margin.bottom
+        var xVarName;
+        var yVarName = options[0].yaxis;
+        xVarName = options[0].xaxis;
+        var xAry = runningData.map(function (el) {
+            return el[xVarName];
+        });
+        var yAry = runningData.map(function (el) {
+            return el[yVarName];
+        });
+        var capAry = runningData.map(function (el) { return el.caption; });
+        var x = d3.scale.ordinal().domain(xAry).rangeRoundBands([0, width], .5);
+        var y = d3.scale.linear().domain([0, d3.max(runningData, function (d) { return d[yVarName]; })]).range([height, 0]);
+        var rcolor = d3.scale.ordinal().range(runningColors);
+        chart = chart
+            .append("svg")  //append svg element inside #chart
+            .attr("width", width + margin.left + margin.right)    //set width
+            .attr("height", height + margin.top + margin.bottom);  //set height
+        var bar = chart.selectAll("g")
+                .data(runningData)
+                .enter()
+                .append("g")
+                .attr("transform", function (d) {
+                    return "translate(" + x(d[xVarName]) + ", 0)";
+                });
+        var ctrtxt = 0;
+        var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom").ticks(xAry.length)
+                    .tickFormat(function (d) {
+                        var mapper = options[0].captions[0]
+                        return mapper[d]
+                    });
+        var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient("left").ticks(5); //orient left because y-axis tick labels will appear on the left side of the axis.
+        bar.append("rect")
+            .attr("y", function (d) {
+                return y(d.value) + margin.top - 15;
+            })
+            .attr("x", function (d) {
+                return (margin.left);
+            })
+        bar.selectAll("rect").attr("height", function (d) {
+            return height - y(d[yVarName]);
+        })
+            .transition().delay(function (d, i) { return i * 300; })
+            .duration(1000)
+            .attr("width", x.rangeBand()) //set width base on range on ordinal data
+            .transition().delay(function (d, i) { return i * 300; })
+            .duration(1000);
+        bar.selectAll("rect").style("fill", function (d) {
+            return rcolor(d[xVarName]);
+        })
+        bar.append("text")
+        .attr("x", x.rangeBand() / 2 + margin.left - 10)
+        .attr("y", function (d) { return y(d[yVarName]) + margin.top - 25; })
+        .attr("dy", ".35em")
+        .text(function (d) {
+            return d[yVarName];
+        });
+        chart.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(" + margin.left + "," + (height + margin.top - 15) + ")")
+            .call(xAxis)
+        .append("text")
+            .attr("x", width)
+            .attr("y", -6)
+        .style("text-anchor", "end")
+        chart.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + margin.left + "," + (margin.top - 15) + ")")
+            .call(yAxis)
+            .append("text")
+            .style("font-size", "18px")
+            .attr("transform", "rotate(0)")
+            .attr("y", 6)
+            .attr("dy", ".150em")
+            .style("text-anchor", "Start")
+            .text("Research Grant");
+ 
+    }
+    function TransformChartData(chartData, opts, level, filter) {
+        var result = [];
+        var resultColors = [];
+        var counter = 0;
+        var hasMatch;
+        var xVarName;
+        var yVarName = opts[0].yaxis;
+        xVarName = opts[0].xaxis;
+        for (var i in chartData) {
+            hasMatch = false;
+            for (var index = 0; index < result.length; ++index) {
+                var data = result[index];
+                if (data[xVarName] == chartData[i][xVarName]) {
+                    result[index][yVarName] = result[index][yVarName] + chartData[i][yVarName];
+                    hasMatch = true;
+                    break;
+                }
+            }
+            if (hasMatch == false) {
+                ditem = {};
+                ditem[xVarName] = chartData[i][xVarName];
+                ditem[yVarName] = chartData[i][yVarName];
+                ditem["caption"] = opts[0].captions != undefined ? opts[0].captions[0][chartData[i][xVarName]] : "";
+                ditem["title"] = opts[0].captions != undefined ? opts[0].captions[0][chartData[i][xVarName]] : "";
+                ditem["op"] = 1;
+                result.push(ditem);
+                resultColors[counter] = opts[0].color != undefined ? opts[0].color[0][chartData[i][xVarName]] : "";
+                counter += 1;
+            }
+        }
+        runningData = result;
+        runningColors = resultColors;
+        return;
+    }
+</script>
+{% endblock %}

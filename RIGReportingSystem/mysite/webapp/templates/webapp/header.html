@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<title>Welcome</title>
+	<meta chartset="utf-8"/>
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'webapp/css/boot3.css'%}"">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="{% static 'webapp/js/jquery2.js'%}"></script>
+  <script src="{% static 'webapp/js/bootstrap.js'%}"></script>
+	
+	<style type ="text/css">
+		html,
+		body {
+				height:100%
+				color: #eaeaea;
+			}
+			#chart text {
+		        fill: black;
+		        font: 10px sans-serif;
+		        text-anchor: end;
+		    }
+		    .axis text {
+		        font: 10px sans-serif;
+		    }
+		    .axis path, .axis line {
+		        fill: none;
+		        /*stroke: #fff;*/
+		        shape-rendering: crispEdges;
+		    }
+		    path {
+		        stroke: steelblue;
+		        stroke-width: 2;
+		        fill: none;
+		    }
+		    li
+		    {
+		    	font: 20px serif;
+		    }
+	</style>
+</head>
+
+<body class="body" style="background-color:#f6f6f6">
+	<div class="container-fluid" style="min-height:95%;">
+		<div class="row">
+			<div class="col-sm-2">
+				<br>
+				<center>
+					<img src="{% static 'webapp/img/uitm.png' %}" class="img-responsive" style='max-height:10p;' alt="uitm" width="500" height="200">
+				</center>
+			</div>
+			<div class="col-sm-10">
+				<br>
+				<center>
+				<h3>RIG Performance Reporting System</h3>
+				</center>
+			</div>
+		</div><hr>
+		
+		<div class"row">
+			<div class="col-sm-2">
+				<div class="well bs-sidebar affix" id="sidebar" role="navigation"style="background-color:#D8BFD8">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a href='/home'>Home</a></li>
+						<li><a href='/about'>About System</a></li>
+						<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">RIG Performance <span class="caret"></span></a>
+					        <ul class="dropdown-menu">
+					          <li><a href="#">Year 2017</a></li>
+					          <li><a href="/2018">Year 2018</a></li>
+					        </ul>
+					      </li>
+						<li><a href='/logout'>Log Out</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-sm-10">
+				<div class='container-fluid'>
+				<br><br>
+					{% block content %}
+					{% endblock %}
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer>
+		<div class="container-fluid" style='margin:15px'>
+		<p>Contact information: <a href="mailto:someone@example.com">amirhambaly96@gmail.com</a>.</p>
+		</div>
+	</footer>		
+					
+	
+</body>
+
+</html>
